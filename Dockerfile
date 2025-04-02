@@ -14,4 +14,4 @@ ENV MONGO_URI=mongodb+srv://artemgawrilyuk:GArtem2007@events.iyrnv0q.mongodb.net
 
 EXPOSE 5000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
