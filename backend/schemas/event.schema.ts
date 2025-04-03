@@ -20,6 +20,10 @@ const sportEventSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    results: {
+      type: Array,
+      required: false,
+    },
   },
   { timestamps: true }
 );
