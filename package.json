@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node ./backend/server.ts"
+    "start": "npx tsx ./backend/server.ts"
   },
   "keywords": [],
   "author": "",
