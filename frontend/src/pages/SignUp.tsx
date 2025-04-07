@@ -1,8 +1,14 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import bcrypt from "bcryptjs";
+import { UserContext } from "../context/userContext";
 
 const SignUp = () => {
+  const navigate = useNavigate();
+
+  const { setUser } = useContext(UserContext);
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -15,20 +21,34 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (localStorage.getItem("users")?.includes(username)) {
+      statusText.current!.textContent = "Користувач з таким ім'ям вже існує";
+      return;
+    }
+
     if (password !== confirmPassword) {
-      statusText.current!.textContent = "Passwords do not match";
+      statusText.current!.textContent = "Паролі різні";
       return;
     } else {
       statusText.current!.textContent = "";
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const loggedInTime = Date.now();
+      const isAdmin = true;
       localStorage.setItem(
-        "user",
-        JSON.stringify({ username, hashedPassword })
+        "users",
+        JSON.stringify([
+          ...users,
+          { username, hashedPassword, loggedInTime, isAdmin },
+        ])
       );
       localStorage.setItem("isLoggedIn", "true");
+
+      setUser({ username, hashedPassword, loggedInTime, isAdmin });
     }
+    navigate("/");
   };
 
   return (

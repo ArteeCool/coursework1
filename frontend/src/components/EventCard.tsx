@@ -20,7 +20,7 @@ const EventCard = ({ event }: { event: Event }) => {
           </ul>
         </div>
       ) : (
-        <p className="text-gray-500 text-sm mt-2">No results available</p>
+        <p className="text-gray-500 text-sm mt-2">Немає результатів</p>
       )}
     </div>
   );

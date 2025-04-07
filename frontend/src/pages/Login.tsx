@@ -1,7 +1,19 @@
-import { useRef, useState } from "react";
-import { Link } from "react-router";
+import bcrypt from "bcryptjs";
+import { useContext, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { UserContext } from "../context/userContext";
+
+interface User {
+  username: string;
+  hashedPassword: string;
+}
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const { user, setUser } = useContext(UserContext);
+  console.log(user);
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -9,7 +21,37 @@ const Login = () => {
   const passwordLabelRef = useRef<HTMLLabelElement>(null);
   const statusText = useRef<HTMLParagraphElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+
+    statusText.current!.textContent = "";
+
+    const foundUser = users.find((element) => element.username === username);
+
+    if (!foundUser) {
+      statusText.current!.textContent = "Користувача з таким ім'ям не існує";
+      return;
+    }
+
+    if (!bcrypt.compareSync(password, foundUser.hashedPassword)) {
+      statusText.current!.textContent = "Неправильний пароль";
+      return;
+    }
+
+    localStorage.setItem("isLoggedIn", "true");
+
+    const loggedInTime = Date.now();
+    setUser({
+      username: foundUser.username,
+      hashedPassword: foundUser.hashedPassword,
+      loggedInTime,
+      isAdmin: false,
+    });
+
+    navigate("/");
+  };
 
   return (
     <div className="w-full min-h-[80vh] flex justify-center items-center">
