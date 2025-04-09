@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
-import { User, UserContext } from "../context/userContext";
+import { User, UserContext } from "../context/index.ts";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router";
 
 const Profile = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { username, loggedInTime, isAdmin, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [newPassword, setNewPassword] = useState<string>("");
@@ -21,12 +21,13 @@ const Profile = () => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    const updatedUser = { ...user, hashedPassword };
+    const updatedUser = { username, hashedPassword, loggedInTime, isAdmin };
     setUser(updatedUser);
+    localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
 
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const updatedUsers = users.map((u: User) =>
-      u.username === user.username ? updatedUser : u
+      u.username === username ? updatedUser : u
     );
     localStorage.setItem("users", JSON.stringify(updatedUsers));
 
@@ -37,10 +38,13 @@ const Profile = () => {
     setUser({
       username: "",
       hashedPassword: "",
-      loggedInTime: Date.now(),
+      loggedInTime: 0,
       isAdmin: false,
     });
-    localStorage.setItem("isLoggedIn", "false");
+
+    localStorage.removeItem("loggedInUser");
+    localStorage.removeItem("isLoggedIn");
+
     navigate("/");
   };
 
@@ -48,7 +52,7 @@ const Profile = () => {
     <div className="w-full min-h-[91.25vh] flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-96 text-center">
         <h2 className="text-2xl font-bold text-gray-800">
-          {user.username || "John Doe"}
+          {username || "John Doe"}
         </h2>
 
         <div className="mt-6">

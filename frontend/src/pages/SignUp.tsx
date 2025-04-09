@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useNavigate } from "react-router";
 import bcrypt from "bcryptjs";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/index.ts";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const SignUp = () => {
 
       const users = JSON.parse(localStorage.getItem("users") || "[]");
       const loggedInTime = Date.now();
-      const isAdmin = true;
+      const isAdmin = false;
       localStorage.setItem(
         "users",
         JSON.stringify([

@@ -8,7 +8,7 @@ interface Event {
   results?: string[];
 }
 
-const API_URL = "https://coursework1-oke9.onrender.com/api/events";
+const API_URL = "http://localhost:5000/api/events";
 
 const AdminPanel = () => {
   const [events, setEvents] = useState<Event[]>([]);

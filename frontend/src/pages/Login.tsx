@@ -1,18 +1,12 @@
+// src/pages/Login.tsx
 import bcrypt from "bcryptjs";
 import { useContext, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { UserContext } from "../context/userContext";
-
-interface User {
-  username: string;
-  hashedPassword: string;
-}
+import { User, UserContext } from "../context/userContext.tsx";
 
 const Login = () => {
   const navigate = useNavigate();
-
-  const { user, setUser } = useContext(UserContext);
-  console.log(user);
+  const { setUser } = useContext(UserContext);
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,15 +15,12 @@ const Login = () => {
   const passwordLabelRef = useRef<HTMLLabelElement>(null);
   const statusText = useRef<HTMLParagraphElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
-
     statusText.current!.textContent = "";
 
-    const foundUser = users.find((element) => element.username === username);
-
+    const foundUser = users.find((u) => u.username === username);
     if (!foundUser) {
       statusText.current!.textContent = "Користувача з таким ім'ям не існує";
       return;
@@ -40,15 +31,15 @@ const Login = () => {
       return;
     }
 
-    localStorage.setItem("isLoggedIn", "true");
-
     const loggedInTime = Date.now();
-    setUser({
-      username: foundUser.username,
-      hashedPassword: foundUser.hashedPassword,
+    const updatedUser: User = {
+      ...foundUser,
       loggedInTime,
-      isAdmin: false,
-    });
+      isAdmin: foundUser.isAdmin || false,
+    };
+
+    setUser(updatedUser);
+    localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
 
     navigate("/");
   };
@@ -70,17 +61,15 @@ const Login = () => {
               Username
             </label>
             <input
-              onFocus={() => {
-                if (usernameLabelRef.current) {
-                  usernameLabelRef.current.style.transform =
-                    "translateY(-45px)";
-                }
-              }}
-              onBlur={(e) => {
-                if (!e.target.value && usernameLabelRef.current) {
-                  usernameLabelRef.current.style.transform = "translateY(0)";
-                }
-              }}
+              onFocus={() =>
+                usernameLabelRef.current &&
+                (usernameLabelRef.current.style.transform = "translateY(-45px)")
+              }
+              onBlur={(e) =>
+                !e.target.value &&
+                usernameLabelRef.current &&
+                (usernameLabelRef.current.style.transform = "translateY(0)")
+              }
               id="username"
               className="w-full bg-gray-100 px-6 py-3 rounded-lg outline-none"
               type="text"
@@ -97,17 +86,15 @@ const Login = () => {
               Password
             </label>
             <input
-              onFocus={() => {
-                if (passwordLabelRef.current) {
-                  passwordLabelRef.current.style.transform =
-                    "translateY(-45px)";
-                }
-              }}
-              onBlur={(e) => {
-                if (!e.target.value && passwordLabelRef.current) {
-                  passwordLabelRef.current.style.transform = "translateY(0)";
-                }
-              }}
+              onFocus={() =>
+                passwordLabelRef.current &&
+                (passwordLabelRef.current.style.transform = "translateY(-45px)")
+              }
+              onBlur={(e) =>
+                !e.target.value &&
+                passwordLabelRef.current &&
+                (passwordLabelRef.current.style.transform = "translateY(0)")
+              }
               id="password"
               className="w-full bg-gray-100 px-6 py-3 rounded-lg outline-none"
               type="password"
@@ -115,7 +102,6 @@ const Login = () => {
               required
             />
           </div>
-          <div className="w-full relative"></div>
           <div className="w-full flex flex-col justify-center items-center gap-3">
             <p className="text-red-500" ref={statusText}></p>
             <p>
@@ -136,4 +122,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;
