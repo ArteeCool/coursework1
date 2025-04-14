@@ -1,7 +1,7 @@
 import { useState, useEffect, ReactNode } from "react";
 import { User, UserContext } from "./userContext";
 
-export const UserContextProvider = ({ children }: { children: ReactNode }) => {
+const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>({
     username: "",
     hashedPassword: "",
@@ -34,3 +34,5 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     </UserContext.Provider>
   );
 };
+
+export default UserContextProvider;
